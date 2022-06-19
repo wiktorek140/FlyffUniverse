@@ -13,7 +13,8 @@
             android:label="@string/app_name"
 			android:configChanges="orientation|screenSize"
 			android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-			android:windowLayoutInDisplayCutoutMode="shortEdges">
+			android:windowLayoutInDisplayCutoutMode="shortEdges"
+android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
