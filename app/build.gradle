@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "30.0.1"
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "pl.wiktorek140.flyff.universe"
-        minSdkVersion 14
-        targetSdkVersion 31
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion 24
+        targetSdkVersion 29
+        versionCode 4
+        versionName "1.2"
     }
     buildTypes {
         release {
@@ -21,4 +21,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+	implementation 'ren.yale.android:cachewebviewlib:2.2.1'
+implementation 'com.squareup.okhttp3:logging-interceptor:4.7.2'
+implementation 'com.squareup.okhttp3:okhttp:4.7.2'
 }
