@@ -1,30 +1,55 @@
 package pl.wiktorek140.flyff.universe;
 
-import android.app.*;
-import android.os.*;
-import android.webkit.*;
-import android.view.*;
-import android.widget.*;
-import android.graphics.*;
-import android.widget.RelativeLayout.*;
-import ren.yale.android.cachewebviewlib.*;
-import org.jetbrains.annotations.*;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
+
+import org.jetbrains.annotations.Nullable;
+
+import ren.yale.android.cachewebviewlib.WebViewCacheInterceptor;
+import ren.yale.android.cachewebviewlib.WebViewCacheInterceptorInst;
+import ren.yale.android.cachewebviewlib.config.CacheExtensionConfig;
 
 public class MainActivity extends Activity {
     WebView mWebView;
     boolean doubleBackToExitPressedOnce = false;
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES,
-                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES | WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            getWindow().setFlags(WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES | WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES | WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        } else {
+            getWindow().setFlags( WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
 
         setContentView(R.layout.main);
 
-        WebViewCacheInterceptorInst.getInstance().
-                init(new WebViewCacheInterceptor.Builder(this));
+        WebViewCacheInterceptor.Builder builder =  new WebViewCacheInterceptor.Builder(this);
+
+        CacheExtensionConfig extension = new CacheExtensionConfig();
+        extension.addExtension("json").addExtension("bin");
+        builder.setCacheExtensionConfig(extension);
+
+        WebViewCacheInterceptorInst.getInstance().initAssetsData(); //background thread to get assets files
+        WebViewCacheInterceptorInst.getInstance().init(builder);
 
         mWebView = findViewById(R.id.webview);
         mWebView.setWebViewClient(new WebViewClient() {
@@ -53,7 +78,6 @@ public class MainActivity extends Activity {
         webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
 
         mWebView.loadUrl("https://universe.flyff.com/play");
-        return;
     }
 
     private class MyChrome extends WebChromeClient {
@@ -86,8 +110,12 @@ public class MainActivity extends Activity {
             this.mOriginalSystemUiVisibility = getWindow().getDecorView().getSystemUiVisibility();
             this.mOriginalOrientation = getRequestedOrientation();
             this.mCustomViewCallback = paramCustomViewCallback;
-            getWindow().setFlags(WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES | WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES | WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                getWindow().setFlags(WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES | WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                        WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES | WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            } else {
+                getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            }
 
             ((FrameLayout) getWindow().getDecorView()).addView(this.mCustomView, new FrameLayout.LayoutParams(-1, -1));
 
@@ -124,11 +152,6 @@ public class MainActivity extends Activity {
         mWebView.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ESCAPE));
         mWebView.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ESCAPE));
 
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                doubleBackToExitPressedOnce = false;
-            }
-        }, 500);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> doubleBackToExitPressedOnce = false, 500);
     }
 }
