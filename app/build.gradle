@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdk 32
-    buildToolsVersion '32.0.0 rc1'
+    compileSdk 33
+    buildToolsVersion '33.0.0'
 
     defaultConfig {
         applicationId "pl.wiktorek140.flyff.universe"
         minSdkVersion 21
-        targetSdkVersion 32
-        versionCode 6
-        versionName "1.4"
+        targetSdkVersion 33
+        versionCode 7
+        versionName "1.5"
     }
     buildTypes {
         release {
@@ -17,11 +17,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    namespace 'pl.wiktorek140.flyff.universe'
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'ren.yale.android:cachewebviewlib:2.2.1'
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.7.2'
-    implementation 'com.squareup.okhttp3:okhttp:4.7.2'
+    implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.10'
+    implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.10'
+    implementation project(':cachewebviewlib')
 }
