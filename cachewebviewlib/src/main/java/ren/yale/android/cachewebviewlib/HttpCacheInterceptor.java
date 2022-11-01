@@ -18,10 +18,10 @@ class HttpCacheInterceptor implements Interceptor {
         Request request = chain.request();
         String cache = request.header(WebViewCacheInterceptor.KEY_CACHE);
         Response originResponse = chain.proceed(request);
-        if (!TextUtils.isEmpty(cache)&&cache.equals(CacheType.NORMAL.ordinal()+"")){
+        if (!TextUtils.isEmpty(cache) && cache.equals(CacheType.NORMAL.ordinal() + "")) {
             return originResponse;
         }
         return originResponse.newBuilder().removeHeader("pragma").removeHeader("Cache-Control")
-                .header("Cache-Control","max-age=3153600000").build();
+                .header("Cache-Control", "max-age=3153600000").build();
     }
 }

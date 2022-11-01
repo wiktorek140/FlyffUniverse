@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "pl.wiktorek140.flyff.universe"
-        minSdkVersion 21
+        minSdkVersion 14
         targetSdkVersion 33
         versionCode 7
         versionName "1.5"

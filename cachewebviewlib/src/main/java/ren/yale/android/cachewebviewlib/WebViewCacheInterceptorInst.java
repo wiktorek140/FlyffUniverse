@@ -15,30 +15,31 @@ import java.util.Map;
  */
 public class WebViewCacheInterceptorInst implements WebViewRequestInterceptor {
 
-
-    private static volatile  WebViewCacheInterceptorInst webViewCacheInterceptorInst;
+    private static volatile WebViewCacheInterceptorInst webViewCacheInterceptorInst;
 
     private WebViewRequestInterceptor mInterceptor;
 
-    public void init(WebViewCacheInterceptor.Builder builder){
-        if (builder!=null){
-            mInterceptor =  builder.build();
+    public void init(WebViewCacheInterceptor.Builder builder) {
+        if (builder != null) {
+            mInterceptor = builder.build();
         }
     }
-    public static WebViewCacheInterceptorInst getInstance(){
-        if (webViewCacheInterceptorInst==null){
-            synchronized (WebViewCacheInterceptorInst.class){
-                if (webViewCacheInterceptorInst == null){
+
+    public static WebViewCacheInterceptorInst getInstance() {
+        if (webViewCacheInterceptorInst == null) {
+            synchronized (WebViewCacheInterceptorInst.class) {
+                if (webViewCacheInterceptorInst == null) {
                     webViewCacheInterceptorInst = new WebViewCacheInterceptorInst();
                 }
             }
         }
         return webViewCacheInterceptorInst;
     }
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
-    public WebResourceResponse interceptRequest( WebResourceRequest request) {
-        if (mInterceptor==null){
+    public WebResourceResponse interceptRequest(WebResourceRequest request) {
+        if (mInterceptor == null) {
             return null;
         }
         return mInterceptor.interceptRequest(request);
@@ -46,7 +47,7 @@ public class WebViewCacheInterceptorInst implements WebViewRequestInterceptor {
 
     @Override
     public WebResourceResponse interceptRequest(String url) {
-        if (mInterceptor==null){
+        if (mInterceptor == null) {
             return null;
         }
         return mInterceptor.interceptRequest(url);
@@ -54,55 +55,55 @@ public class WebViewCacheInterceptorInst implements WebViewRequestInterceptor {
 
     @Override
     public void loadUrl(WebView webView, String url) {
-        if (mInterceptor==null){
-            return ;
+        if (mInterceptor == null) {
+            return;
         }
-        mInterceptor.loadUrl(webView,url);
+        mInterceptor.loadUrl(webView, url);
     }
 
     @Override
     public void loadUrl(String url, String userAgent) {
-        if (mInterceptor==null){
-            return ;
+        if (mInterceptor == null) {
+            return;
         }
-        mInterceptor.loadUrl(url,userAgent);
+        mInterceptor.loadUrl(url, userAgent);
     }
 
     @Override
     public void loadUrl(String url, Map<String, String> additionalHttpHeaders, String userAgent) {
-        if (mInterceptor==null){
-            return ;
+        if (mInterceptor == null) {
+            return;
         }
-        mInterceptor.loadUrl(url,additionalHttpHeaders,userAgent);
+        mInterceptor.loadUrl(url, additionalHttpHeaders, userAgent);
     }
 
     @Override
     public void loadUrl(WebView webView, String url, Map<String, String> additionalHttpHeaders) {
-        if (mInterceptor==null){
-            return ;
+        if (mInterceptor == null) {
+            return;
         }
-        mInterceptor.loadUrl(webView,url,additionalHttpHeaders);
+        mInterceptor.loadUrl(webView, url, additionalHttpHeaders);
     }
 
     @Override
     public void clearCache() {
-        if (mInterceptor==null){
-            return ;
+        if (mInterceptor == null) {
+            return;
         }
         mInterceptor.clearCache();
     }
 
     @Override
     public void enableForce(boolean force) {
-        if (mInterceptor==null){
-            return ;
+        if (mInterceptor == null) {
+            return;
         }
         mInterceptor.enableForce(force);
     }
 
     @Override
     public InputStream getCacheFile(String url) {
-        if (mInterceptor==null){
+        if (mInterceptor == null) {
             return null;
         }
         return mInterceptor.getCacheFile(url);
@@ -115,7 +116,7 @@ public class WebViewCacheInterceptorInst implements WebViewRequestInterceptor {
 
     @Override
     public File getCachePath() {
-        if (mInterceptor==null){
+        if (mInterceptor == null) {
             return null;
         }
         return mInterceptor.getCachePath();

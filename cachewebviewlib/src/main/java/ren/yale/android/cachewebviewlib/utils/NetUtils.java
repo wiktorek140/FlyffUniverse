@@ -24,7 +24,7 @@ public class NetUtils {
         return info != null && info.isConnected();
     }
 
-    public static  String getOriginUrl(String referer) {
+    public static String getOriginUrl(String referer) {
         String ou = referer;
         if (TextUtils.isEmpty(ou)) {
             return "";
@@ -33,28 +33,27 @@ public class NetUtils {
             URL url = new URL(ou);
             int port = url.getPort();
             ou = url.getProtocol() + "://" + url.getHost() + (port == -1 ? "" : ":" + port);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         return ou;
     }
 
-    public static Map<String,String> multimapToSingle(Map<String, List<String>> maps){
-
+    public static Map<String, String> multimapToSingle(Map<String, List<String>> maps) {
         StringBuilder sb = new StringBuilder();
-        Map<String,String> map = new HashMap<>();
-        for (Map.Entry<String, List<String>> entry: maps.entrySet()) {
+        Map<String, String> map = new HashMap<>();
+        for (Map.Entry<String, List<String>> entry : maps.entrySet()) {
             List<String> values = entry.getValue();
-            sb.delete(0,sb.length());
-            if (values!=null&&values.size()>0){
-                for (String v:values) {
+            sb.delete(0, sb.length());
+            if (values != null && values.size() > 0) {
+                for (String v : values) {
                     sb.append(v);
                     sb.append(";");
                 }
             }
-            if (sb.length()>0){
-                sb.deleteCharAt(sb.length()-1);
+            if (sb.length() > 0) {
+                sb.deleteCharAt(sb.length() - 1);
             }
-            map.put(entry.getKey(),sb.toString());
+            map.put(entry.getKey(), sb.toString());
         }
         return map;
     }

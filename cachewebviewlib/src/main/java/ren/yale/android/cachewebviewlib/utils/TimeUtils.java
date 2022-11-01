@@ -1,5 +1,7 @@
 package ren.yale.android.cachewebviewlib.utils;
 
+import android.annotation.SuppressLint;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,18 +15,17 @@ public class TimeUtils {
     private static final String STARD_FROMAT = "yyyy-MM-dd HH:mm:ss";
 
     public static Date formatGMT(String time) {
-        if (time.indexOf("GMT") < 0) {
+        if (!time.contains("GMT")) {
             try {
-                long tt = Long.valueOf(time);
+                long tt = Long.parseLong(time);
                 return new Date(tt * 1000);
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
             return null;
         }
         SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US);
         try {
-            Date date = sdf.parse(time.trim());
-            return date;
+            return sdf.parse(time.trim());
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -39,10 +40,9 @@ public class TimeUtils {
     }
 
     public static Date getStardTime(String time) {
-        SimpleDateFormat sdf = new SimpleDateFormat(STARD_FROMAT);
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat(STARD_FROMAT);
         try {
-            Date date = sdf.parse(time);
-            return date;
+            return sdf.parse(time);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -51,8 +51,7 @@ public class TimeUtils {
 
     public static Date getStardTime(Long time) {
         try {
-            Date date = new Date(time * 1000);
-            return date;
+            return new Date(time * 1000);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -60,7 +59,7 @@ public class TimeUtils {
     }
 
     public static String getCurrentTime() {
-        SimpleDateFormat sdf = new SimpleDateFormat(STARD_FROMAT);
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat(STARD_FROMAT);
         return sdf.format(new Date());
     }
 }

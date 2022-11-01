@@ -16,13 +16,9 @@ public class MD5Utils {
         String md5str = "";
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
-
             byte[] input = message.getBytes();
-
             byte[] buff = md.digest(input);
-
             md5str = bytesToHex(buff, upperCase);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -30,7 +26,7 @@ public class MD5Utils {
     }
 
     public static String bytesToHex(byte[] bytes, boolean upperCase) {
-        StringBuffer md5str = new StringBuffer();
+        StringBuilder md5str = new StringBuilder();
         int digital;
         for (int i = 0; i < bytes.length; i++) {
             digital = bytes[i];
@@ -48,5 +44,4 @@ public class MD5Utils {
         }
         return md5str.toString().toLowerCase();
     }
-
 }

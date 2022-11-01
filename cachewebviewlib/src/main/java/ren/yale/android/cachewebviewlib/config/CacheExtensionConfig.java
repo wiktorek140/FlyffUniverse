@@ -10,7 +10,7 @@ import java.util.HashSet;
 
 public class CacheExtensionConfig {
     //全局默认的
-    private static HashSet STATIC = new HashSet() {
+    private static final HashSet<String> STATIC = new HashSet<String>() {
         {
             add("html");
             add("htm");
@@ -36,7 +36,7 @@ public class CacheExtensionConfig {
             add("webp");
         }
     };
-    private static HashSet NO_CACH = new HashSet() {
+    private static final HashSet<String> NO_CACH = new HashSet<String>() {
         {
             add("mp4");
             add("mp3");
@@ -49,8 +49,8 @@ public class CacheExtensionConfig {
         }
     };
     //单独webview实例的
-    private HashSet statics = new HashSet(STATIC);
-    private HashSet no_cache = new HashSet(NO_CACH);
+    private final HashSet<String> statics = new HashSet<String>(STATIC);
+    private final HashSet<Object> no_cache = new HashSet<Object>(NO_CACH);
 
     public static void addGlobalExtension(String extension) {
         add(STATIC, extension);
@@ -61,14 +61,14 @@ public class CacheExtensionConfig {
     }
 
 
-    private static void add(HashSet set, String extension) {
+    private static void add(HashSet<String> set, String extension) {
         if (TextUtils.isEmpty(extension)) {
             return;
         }
         set.add(extension.replace(".", "").toLowerCase().trim());
     }
 
-    private static void remove(HashSet set, String extension) {
+    private static void remove(HashSet<String> set, String extension) {
         if (TextUtils.isEmpty(extension)) {
             return;
         }
@@ -86,7 +86,6 @@ public class CacheExtensionConfig {
     }
 
     public boolean canCache(String extension) {
-
         if (TextUtils.isEmpty(extension)) {
             return false;
         }
@@ -95,9 +94,7 @@ public class CacheExtensionConfig {
             return true;
         }
         return statics.contains(extension);
-
     }
-
 
     public CacheExtensionConfig addExtension(String extension) {
         add(statics, extension);
@@ -109,17 +106,14 @@ public class CacheExtensionConfig {
         return this;
     }
 
-
     public boolean isHtml(String extension) {
         if (TextUtils.isEmpty(extension)) {
             return false;
         }
-        if (extension.toLowerCase().contains("html") ||
-                extension.toLowerCase().contains("htm")) {
-            return true;
-        }
-        return false;
+        return extension.toLowerCase().contains("html") ||
+                extension.toLowerCase().contains("htm");
     }
+
     public void clearAll() {
         clearDiskExtension();
     }
@@ -127,5 +121,4 @@ public class CacheExtensionConfig {
     public void clearDiskExtension() {
         statics.clear();
     }
-
 }

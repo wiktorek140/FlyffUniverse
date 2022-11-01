@@ -13,9 +13,7 @@ import java.io.OutputStream;
 
 public class FileUtil {
 
-
     public static void deleteDirs(String path, boolean isDeleteDir) {
-
         if (TextUtils.isEmpty(path)) {
             return;
         }
@@ -24,6 +22,10 @@ public class FileUtil {
             return;
         }
         File[] files = dir.listFiles();
+        if (files == null) {
+            return;
+        }
+
         for (File file : files) {
             if (file.isDirectory()) {
                 deleteDirs(file.getAbsolutePath(), isDeleteDir);
@@ -34,18 +36,15 @@ public class FileUtil {
         if (isDeleteDir) {
             dir.delete();
         }
-
     }
 
-
     public static void copy(InputStream inputStream, OutputStream out) throws IOException {
-        byte[] buf =new byte[512];
+        byte[] buf = new byte[512];
         int len = -1;
-        while ((len = inputStream.read(buf))!=-1){
-            out.write(buf,0,len);
+        while ((len = inputStream.read(buf)) != -1) {
+            out.write(buf, 0, len);
         }
         inputStream.close();
         out.close();
     }
-
 }

@@ -30,33 +30,31 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import ren.yale.android.cachewebviewlib.config.CacheExtensionConfig;
-import ren.yale.android.cachewebviewlib.DynamicCacheLoader;
 import ren.yale.android.cachewebviewlib.utils.FileUtil;
 import ren.yale.android.cachewebviewlib.utils.MimeTypeMapUtils;
 import ren.yale.android.cachewebviewlib.utils.NetUtils;
 import ren.yale.android.cachewebviewlib.utils.OKHttpFile;
-
 
 /**
  * Created by yale on 2018/7/13.
  */
 public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
 
-    private File mCacheFile;
-    private File mDynamicCacheFile;
-    private long mCacheSize;
-    private long mConnectTimeout;
-    private long mReadTimeout;
-    private CacheExtensionConfig mCacheExtensionConfig;
-    private Context mContext;
-    private boolean mDebug;
+    private final File mCacheFile;
+    private final File mDynamicCacheFile;
+    private final long mCacheSize;
+    private final long mConnectTimeout;
+    private final long mReadTimeout;
+    private final CacheExtensionConfig mCacheExtensionConfig;
+    private final Context mContext;
+    private final boolean mDebug;
     private CacheType mCacheType;
     private String mAssetsDir = null;
     private boolean mTrustAllHostname = false;
     private SSLSocketFactory mSSLSocketFactory = null;
     private X509TrustManager mX509TrustManager = null;
-    private Dns mDns=null;
-    private ResourceInterceptor mResourceInterceptor;
+    private Dns mDns = null;
+    private final ResourceInterceptor mResourceInterceptor;
     private boolean mIsSuffixMod = false;
 
     //==============
@@ -91,9 +89,8 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
         }
     }
 
-
-    private boolean isEnableDynamicCache(){
-        return mDynamicCacheFile!=null;
+    private boolean isEnableDynamicCache() {
+        return mDynamicCacheFile != null;
     }
 
     private boolean isEnableAssets() {
@@ -105,7 +102,6 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
     }
 
     private void initHttpClient() {
-
         final Cache cache = new Cache(mCacheFile, mCacheSize);
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .cache(cache)
@@ -113,17 +109,12 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
                 .readTimeout(mReadTimeout, TimeUnit.SECONDS)
                 .addNetworkInterceptor(new HttpCacheInterceptor());
         if (mTrustAllHostname) {
-            builder.hostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }
-            });
+            builder.hostnameVerifier((hostname, session) -> true);
         }
         if (mSSLSocketFactory != null && mX509TrustManager != null) {
             builder.sslSocketFactory(mSSLSocketFactory, mX509TrustManager);
         }
-        if(mDns!=null){
+        if (mDns != null) {
             builder.dns(mDns);
         }
         mHttpClient = builder.build();
@@ -138,7 +129,7 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
 
     private Map<String, String> buildHeaders() {
 
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         if (!TextUtils.isEmpty(mOrigin)) {
             headers.put("Origin", mOrigin);
         }
@@ -171,18 +162,13 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
 
         String extension = MimeTypeMapUtils.getFileExtensionFromUrl(url);
 
-
         if (TextUtils.isEmpty(extension)) {
             return false;
         }
         if (mCacheExtensionConfig.isMedia(extension)) {
             return false;
         }
-        if (!mCacheExtensionConfig.canCache(extension)) {
-            return false;
-        }
-
-        return true;
+        return mCacheExtensionConfig.canCache(extension);
     }
 
     @Override
@@ -260,7 +246,6 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
     }
 
     public void addHeader(Request.Builder reqBuilder, Map<String, String> headers) {
-
         if (headers == null) {
             return;
         }
@@ -270,7 +255,6 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
     }
 
     private WebResourceResponse interceptRequest(String url, Map<String, String> headers) {
-
         if (mCacheType == CacheType.NORMAL) {
             return null;
         }
@@ -278,41 +262,31 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
             return null;
         }
 
-
-
-      if (isEnableDynamicCache()) {
-        File file = DynamicCacheLoader.getInstance().getResByUrl(mDynamicCacheFile, url);
-        if (file != null) {
-          CacheWebViewLog.d(String.format("from dynamic file: %s", url), mDebug);
-          String mimeType = MimeTypeMapUtils.getMimeTypeFromUrl(url);
-          InputStream inputStream = null;
-          try {
-            inputStream = new FileInputStream(file);
-          } catch (FileNotFoundException e) {
-            e.printStackTrace();
-          }
-          WebResourceResponse webResourceResponse = new WebResourceResponse(mimeType, "",
-              inputStream);
-          return webResourceResponse;
-
+        if (isEnableDynamicCache()) {
+            File file = DynamicCacheLoader.getInstance().getResByUrl(mDynamicCacheFile, url);
+            if (file != null) {
+                CacheWebViewLog.d(String.format("from dynamic file: %s", url), mDebug);
+                String mimeType = MimeTypeMapUtils.getMimeTypeFromUrl(url);
+                InputStream inputStream = null;
+                try {
+                    inputStream = new FileInputStream(file);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                return new WebResourceResponse(mimeType, "", inputStream);
+            }
         }
-
-
-      }
-
-
 
         if (isEnableAssets()) {
             InputStream inputStream = AssetsLoader.getInstance().getResByUrl(url);
             if (inputStream != null) {
                 CacheWebViewLog.d(String.format("from assets: %s", url), mDebug);
                 String mimeType = MimeTypeMapUtils.getMimeTypeFromUrl(url);
-                WebResourceResponse webResourceResponse = new WebResourceResponse(mimeType, "", inputStream);
-                return webResourceResponse;
+                return new WebResourceResponse(mimeType, "", inputStream);
             }
         }
-        try {
 
+        try {
             Request.Builder reqBuilder = new Request.Builder()
                     .url(url);
 
@@ -336,7 +310,7 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
             }
             String mimeType = MimeTypeMapUtils.getMimeTypeFromUrl(url);
             WebResourceResponse webResourceResponse = new WebResourceResponse(mimeType, "", response.body().byteStream());
-            if (response.code() == 504 && !NetUtils.isConnected(mContext)){
+            if (response.code() == 504 && !NetUtils.isConnected(mContext)) {
                 return null;
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -366,10 +340,9 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
         private long mConnectTimeout = 20;
         private long mReadTimeout = 20;
         private CacheExtensionConfig mCacheExtensionConfig;
-        private Context mContext;
+        private final Context mContext;
         private boolean mDebug = true;
         private CacheType mCacheType = CacheType.FORCE;
-
 
         private boolean mTrustAllHostname = false;
         private SSLSocketFactory mSSLSocketFactory = null;
@@ -378,9 +351,9 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
 
         private String mAssetsDir = null;
         private boolean mIsSuffixMod = false;
-        private Dns mDns=null;
-        public Builder(Context context) {
+        private Dns mDns = null;
 
+        public Builder(Context context) {
             mContext = context;
             mCacheFile = new File(context.getCacheDir().toString(), "CacheWebViewCache");
             mCacheExtensionConfig = new CacheExtensionConfig();
@@ -410,8 +383,8 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
             return this;
         }
 
-        public Builder setDynamicCachePath(File file){
-            if(file!=null){
+        public Builder setDynamicCachePath(File file) {
+            if (file != null) {
                 mDynamicCacheFile = file;
             }
             return this;
@@ -475,7 +448,6 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
         public WebViewRequestInterceptor build() {
             return new WebViewCacheInterceptor(this);
         }
-
     }
 
     boolean isValidUrl(String url) {

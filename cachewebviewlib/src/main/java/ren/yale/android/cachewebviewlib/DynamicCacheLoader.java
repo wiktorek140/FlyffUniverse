@@ -8,69 +8,68 @@ import java.net.URL;
  * @Description: 加载动态设置的缓存文件
  * @Author: po1arbear
  * @Date: 2021/3/11 7:14 PM
- *
  */
 public class DynamicCacheLoader {
 
-  private static volatile DynamicCacheLoader INSTANCE;
+    private static volatile DynamicCacheLoader INSTANCE;
 
-
-  public static DynamicCacheLoader getInstance() {
-    if (INSTANCE == null) {
-      synchronized (DynamicCacheLoader.class) {
+    public static DynamicCacheLoader getInstance() {
         if (INSTANCE == null) {
-          INSTANCE = new DynamicCacheLoader();
+            synchronized (DynamicCacheLoader.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = new DynamicCacheLoader();
+                }
+            }
         }
-      }
+        return INSTANCE;
     }
-    return INSTANCE;
-  }
 
 
-  public File getResByUrl(File file, String url) {
-    String uPath = getUrlPath(url);
-    if (file.isDirectory()) {
-      File[] files = file.listFiles();
-      for (File child : files) {
-        if (child.isDirectory()) {
-          File targetFile = getResByUrl(child, url);
-          if (targetFile != null) {
-            return targetFile;
-          }
+    public File getResByUrl(File file, String url) {
+        String uPath = getUrlPath(url);
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            if (files == null) {
+                return null;
+            }
+
+            for (File child : files) {
+                if (child.isDirectory()) {
+                    File targetFile = getResByUrl(child, url);
+                    if (targetFile != null) {
+                        return targetFile;
+                    }
+                } else {
+                    String fileName = child.getName();
+                    if (uPath.endsWith(fileName)) {
+                        return child;
+                    }
+                }
+            }
         } else {
-          String fileName = child.getName();
-          if (uPath.endsWith(fileName)) {
-            return child;
-          }
+            String fileName = file.getName();
+            if (uPath.endsWith(fileName)) {
+                return file;
+            }
         }
-      }
-    } else {
-      String fileName = file.getName();
-      if (uPath.endsWith(fileName)) {
-        return file;
-      }
-    }
-    return null;
-  }
-
-
-  public String getUrlPath(String url) {
-    String uPath = "";
-    try {
-      URL u = new URL(url);
-      uPath = u.getPath();
-      if (uPath.startsWith("/")) {
-        if (uPath.length() == 1) {
-          return uPath;
-        }
-        uPath = uPath.substring(1);
-      }
-    } catch (MalformedURLException e) {
-      e.printStackTrace();
+        return null;
     }
 
-    return uPath;
-  }
+    public String getUrlPath(String url) {
+        String uPath = "";
+        try {
+            URL u = new URL(url);
+            uPath = u.getPath();
+            if (uPath.startsWith("/")) {
+                if (uPath.length() == 1) {
+                    return uPath;
+                }
+                uPath = uPath.substring(1);
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
 
-
+        return uPath;
+    }
 }
