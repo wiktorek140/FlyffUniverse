@@ -70,11 +70,9 @@ public class MainActivity extends Activity {
 
         WebSettings webSettings = mWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        webSettings.setAppCacheEnabled(true);
         webSettings.setDomStorageEnabled(true);
         webSettings.setAllowFileAccess(true);
         webSettings.setAllowContentAccess(true);
-        webSettings.setAppCachePath(this.getCacheDir().getAbsolutePath());
         webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
 
         mWebView.loadUrl("https://universe.flyff.com/play");
@@ -84,7 +82,6 @@ public class MainActivity extends Activity {
 
         private View mCustomView;
         private WebChromeClient.CustomViewCallback mCustomViewCallback;
-        protected FrameLayout mFullscreenContainer;
         private int mOriginalOrientation;
         private int mOriginalSystemUiVisibility;
 
